@@ -38,17 +38,17 @@ sample the time of the episodes for that patient.
 ### Hierarchical Poisson
 
 Episode process for patient i modeled as Poisson process of rate
-![equation](http://mathurl.com/yd2xhu3q).  Distribution of
-![equation](http://mathurl.com/yd2xhu3q) is a, say, Gamma(r,alpha)
+![lambda_i](http://mathurl.com/yd2xhu3q.png).  Distribution of
+![lambda_i](http://mathurl.com/yd2xhu3q.png) is, say, a Gamma(r,alpha)
 distribution.
 
 ### Hierarchical Negative Binomial Process
 
 Episode process for patient i modeled as a [negative binomial
 process](https://en.wikipedia.org/wiki/Negative_binomial_distribution) with
-parameters ![equation](http://mathurl.com/yca7w4ce).  Distribution of r_i can
-be another negative binomial, and p can be sampled from a beta distribution.
-(These should probably be correlated.)
+parameters ![NB(r_i,p_i)](http://mathurl.com/yca7w4ce.png).  The r_i can be
+sampled from another negative binomial, and p_i can be sampled from a beta
+distribution. (These should probably be correlated.)
 
 ## Generative Models
 
