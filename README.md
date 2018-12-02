@@ -2,6 +2,7 @@
 
 ##### Table of Contents  
 -  [The Problem](#the-problem) 
+-  [Installation](#installation)
 -  [Data](#data) 
 -  [Models](#models) 
     * [Hierarchical Poisson](#hierarchical-poisson)
@@ -22,11 +23,31 @@ after the treatment is significantly lower than the rate before the treatment.
 
 (Because the treatment is invasive, ethical considerations prevent a double-blinded experiment.)
 
+## Installation
+
+To download this repo and the required libraries:
+```
+git clone https://github.com/wfbradley/sickle_stats.git
+cd sickle_stats
+pip install -r requirements.txt --user --upgrade
+```
+
+If the `pip install` fails for permission reasons, one can instead try
+```
+sudo -H pip install -r requirements.txt --upgrade
+```
+
 ## Data
-Data is confidential so cannot be provided in GitHub.  The data is structured as
+Data is confidential so cannot be provided in GitHub.  All confidential
+data should be put in the "confidential_data/" subdirectory.
+
+The data is structured as
 follows...
 
-Data is cleaned by running the following script...
+Data is cleaned and put into a standard form by running
+```
+python 00_clean_data.py
+```
 
 ## Models
 
