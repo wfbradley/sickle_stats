@@ -8,6 +8,7 @@ import pandas as pd
 import os
 import time
 import utils_sickle_stats as utils
+logger = utils.logger
 
 
 # Convert string "2014-11-02" to epoch time
@@ -23,7 +24,7 @@ def clean_data(args):
     # [u'Unique Subject Identifier', u'Informed consent date',
     #  u'Infusion Date', u'Type of VOE', u'Onset date', u'Resolution date',
     #  u'No. of VOEs']
-    df = pd.read_excel(input_filename)
+    df = pd.read_excel(input_filename).drop_duplicates()
 
     # We will leave the original columns unchanged, and only add derived
     # columns
@@ -60,10 +61,47 @@ def clean_data(args):
         df['episode_duration_days'].values[i] = 1 + (
             df['end_epoch'].values[i] - df['start_epoch'].values[i]) / 86400
 
-    output_filename = os.path.join(
-        args.confidential_dir, args.output_file)
-    print "Writing file ", output_filename
-    df.to_csv(output_filename, index=False)
+    # Handle missing dates by coalescing from other date (e.g., if
+    # start date of episode is present but end date is missing, insert end date
+    # into start date)
+    df['start_epoch_coalesced'] = df['start_epoch']
+    df['end_epoch_coalesced'] = df['end_epoch']
+    df['episode_duration_days_coalesced'] = df['episode_duration_days']
+
+    time_list = ['start', 'end']
+    for i in xrange(2):
+        s = time_list[i]
+        t = time_list[1 - i]
+        df['%s_epoch_coalesced' % s] = df['%s_epoch' % s]
+        invalid = pd.isnull(df['%s_epoch_coalesced' % s])
+        df['%s_epoch_coalesced' % s].values[
+            invalid] = df['%s_epoch' % t].values[invalid]
+    invalid = pd.isnull(df['episode_duration_days_coalesced'])
+    df['episode_duration_days_coalesced'].values[invalid] = 1
+
+    clean_filename = os.path.join(
+        args.confidential_dir, args.clean_file)
+    logger.info("Writing file %s" % clean_filename)
+    df.to_csv(clean_filename, index=False)
+
+    # Extract interarrival times
+    grouped = df.groupby('Unique Subject Identifier')
+    df_interarrival = pd.DataFrame(columns=['id', 'interarrival_days'])
+    for subject, df_subject in grouped:
+        onsets = df_subject['start_epoch_coalesced'].values / 86400
+        onsets = onsets[np.isfinite(onsets)]
+        interarrival_times = np.diff(np.sort(onsets))
+        # Note: it's possible to have a VOC and ACS at the same time;
+        # we should coalesce these into a single episode, per below.
+        interarrival_times = interarrival_times[interarrival_times > 0]
+        for t in interarrival_times:
+            df_interarrival = df_interarrival.append(
+                {'id': subject, 'interarrival_days': t}, ignore_index=True)
+
+    interarrival_filename = os.path.join(
+        args.confidential_dir, "interarrival_times.csv")
+    logger.info("Writing file %s" % interarrival_filename)
+    df_interarrival.to_csv(interarrival_filename, index=False)
 
 
 if __name__ == '__main__':

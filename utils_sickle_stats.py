@@ -72,8 +72,10 @@ def parse_arguments():
                         help='Directory for all working files and output')
     parser.add_argument('--input_file', type=str, default='l_voc_acs_mh.xlsx',
                         help='Input Excel data file within confidential_data_dir')
-    parser.add_argument('--output_file', type=str, default='cleaned_data.csv',
+    parser.add_argument('--clean_file', type=str, default='cleaned_data.csv',
                         help='Input Excel data file within confidential_data_dir')
+    parser.add_argument('--draw_plots', type=bool, default=True,
+                        help='Render plots to screen')    
 
     parser.add_argument('--keep_old_logs', action='store_true', default=False,
                         help='By default, old log file is deleted; this preserves it.')
