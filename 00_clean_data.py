@@ -5,9 +5,9 @@
 
 import numpy as np
 import pandas as pd
-import argparse
 import os
 import time
+import utils_sickle_stats as utils
 
 
 # Convert string "2014-11-02" to epoch time
@@ -18,7 +18,7 @@ def to_epoch(s):
 
 def clean_data(args):
 
-    input_filename = os.path.join(args.confidential_data_dir, args.input_file)
+    input_filename = os.path.join(args.confidential_dir, args.input_file)
 
     # [u'Unique Subject Identifier', u'Informed consent date',
     #  u'Infusion Date', u'Type of VOE', u'Onset date', u'Resolution date',
@@ -61,20 +61,12 @@ def clean_data(args):
             df['end_epoch'].values[i] - df['start_epoch'].values[i]) / 86400
 
     output_filename = os.path.join(
-        args.confidential_data_dir, args.output_file)
+        args.confidential_dir, args.output_file)
     print "Writing file ", output_filename
     df.to_csv(output_filename, index=False)
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Supervised ML classification',
-                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--confidential_data_dir', type=str, default='confidential_data',
-                        help='Directory for reading and writing confidential data.')
-    parser.add_argument('--input_file', type=str, default='l_voc_acs_mh.xlsx',
-                        help='Input Excel data file within confidential_data_dir')
-    parser.add_argument('--output_file', type=str, default='cleaned_data.csv',
-                        help='Input Excel data file within confidential_data_dir')
-    args = parser.parse_args()
-
+    args = utils.parse_arguments()
+    utils.initialize_logger(args)
     clean_data(args)
