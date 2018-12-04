@@ -1,2 +1,3 @@
 confidential_data*
 *.ipynb
+*.pyc
