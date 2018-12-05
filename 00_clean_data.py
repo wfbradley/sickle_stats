@@ -19,6 +19,9 @@ def to_epoch(s):
 
 def clean_data(args):
 
+    logger.info('==================================')
+    logger.info('DATA CLEANING')
+
     input_filename = os.path.join(args.confidential_dir, args.input_file)
 
     # [u'Unique Subject Identifier', u'Informed consent date',

@@ -11,6 +11,9 @@ sns.set()
 
 def preliminary_stats(args):
 
+    logger.info('==================================')
+    logger.info('PRELIMINARY STATS')
+
     filename = os.path.join(
         args.confidential_dir, args.clean_file)
     logger.info("Summarizing data from %s" % filename)
@@ -49,7 +52,7 @@ def preliminary_stats(args):
 
             time_span_days = subject_to_timespan[subject]
             plt.title('Subject %s; N=%d episodes over %d days (%d days/eps)' % (
-                subject[-4:], len(df_subject),
+                subject[-4:], len(df_subject) + 1,
                 time_span_days, 1.0 * time_span_days / len(df_subject)))
             plt.xlabel('Episode interarrival time in days')
 
