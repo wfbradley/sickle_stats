@@ -1,3 +1,4 @@
-confidential_data*
+confidential_data/*
+data/*
 *.ipynb
 *.pyc
