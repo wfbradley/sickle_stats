@@ -6,7 +6,7 @@ import scipy as sp
 import tweedie_dist
 
 
-def fit_tweedie(data):
+def tweedie_fit(data):
     results = {}
 
     if len(data) <= 2:
@@ -16,12 +16,10 @@ def fit_tweedie(data):
             results['phi'] = 1
         else:
             results['phi'] = np.var(data)
+        results['loglikelihood'] = np.inf
         return(results)
 
     def quasi_loglikelihood(x):
-        # print -np.sum(tweedie_dist(mu=x[0], p=x[1], phi=x[2]).logpdf(data))
-        # print type(-np.sum(tweedie_dist(mu=x[0], p=x[1],
-        # phi=x[2]).logpdf(data)))
         ll = - np.sum(tweedie_dist.tweedie(
             mu=x[0], p=x[1], phi=x[2]).logpdf(data))
         return(ll)
@@ -29,14 +27,17 @@ def fit_tweedie(data):
     x_initial = np.array([np.mean(data), 1.5,
                           np.var(data) / np.power(np.mean(data), 0.66)])
 
-    # SQSLP seems to hang, and L-BFGS-B halts too early,
-    # so we're not going to enforce bounds and just hope for the best.
-    # mu_bounds = (None, None)
-    # p_bounds = (1.02, None)
-    # phi_bounds = (0, None)
+    # SLSQP: sometimes a smidge better than L-BFGS, but sometimes
+    # has less stable results.
+    mu_bounds = (None, None)
+    p_bounds = (1.02, 1.95)
+    phi_bounds = (0.5, None)
 
     opt = sp.optimize.minimize(quasi_loglikelihood, x_initial,
-                               method='Nelder-Mead'
+                               method='L-BFGS-B',
+                               # method='SLSQP',
+                               bounds=(mu_bounds, p_bounds, phi_bounds),
+                               # options={'maxiter': 200}
                                )
 
     results['mu'] = opt.x[0]

@@ -53,8 +53,8 @@ def preliminary_stats(args):
             time_span_days = subject_to_timespan[subject]
             plt.title('Subject %s; N=%d episodes over %d days ($\mu$=%d, $\sigma$=%.1f, $\sigma^2$=%d)' % (
                 subject[-4:], len(df_subject) + 1,
-                time_span_days, np.mean(
-                    interarrival_times), np.std(interarrival_times),
+                time_span_days, np.mean(interarrival_times),
+                np.std(interarrival_times),
                 np.var(interarrival_times)))
             plt.xlabel('Episode interarrival time in days')
 

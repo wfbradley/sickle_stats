@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import utils_sickle_stats as utils
+import tweedie_dist
 import tweedie_fit
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -22,10 +23,11 @@ def tweedie_analysis(args):
     grouped_interarrival = df_interarrival.groupby('id')
 
     df_tweedie_params = pd.DataFrame(columns=['id', 'mu', 'p', 'phi', 'interarrival_mean',
-                                              'interarrival_var', 'interarrival_count'],
+                                              'interarrival_var', 'interarrival_count', 'loglikelihood'],
                                      index=np.arange(len(grouped_interarrival)))
 
     for i, (subject, df_subject) in enumerate(grouped_interarrival):
+        print i
         data = df_subject['interarrival_days'].values
 
         df_tweedie_params['id'].values[i] = subject
@@ -34,15 +36,17 @@ def tweedie_analysis(args):
         df_tweedie_params['interarrival_count'].values[i] = len(data)
 
         try:
-            tweedie_params = tweedie_fit.nbinom_fit(data)
-            (mu, p, phi) = (tweedie_params['mu'], tweedie_params['p'], tweedie_params['phi'])
+            tweedie_params = tweedie_fit.tweedie_fit(data)
+            (mu, p, phi, loglikelihood) = (tweedie_params['mu'], tweedie_params['p'],
+                                           tweedie_params['phi'], tweedie_params['loglikelihood'])
         except Exception:
             logger.info('Could not fit Tweedie on %s' % subject)
-            (mu, p, phi) = (np.nan, np.nan, np.nan)
+            (mu, p, phi, loglikelihood) = (np.nan, np.nan, np.nan, np.nan)
 
         df_tweedie_params['mu'].values[i] = mu
         df_tweedie_params['p'].values[i] = p
         df_tweedie_params['phi'].values[i] = phi
+        df_tweedie_params['loglikelihood'].values[i] = loglikelihood
 
         if np.isnan(mu):
             continue
@@ -62,8 +66,8 @@ def tweedie_analysis(args):
             plt.xlabel('Episode interarrival time in days')
 
             domain = np.arange(1, np.max(data) + 20)
-            rv = tweedie(mu=mu, p=p, phi=phi)
-            tweedie_density = rv.pmf(domain)
+            rv = tweedie_dist.tweedie(mu=mu, p=p, phi=phi)
+            tweedie_density = rv.pdf(domain)
             plt.plot(domain, tweedie_density,
                      label='Tweedie (mu=%.2f, p=%.2f, phi=%.2f)' % (mu, p, phi))
 

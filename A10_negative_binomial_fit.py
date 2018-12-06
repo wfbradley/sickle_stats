@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import utils_sickle_stats as utils
-import fit_nbinom
+import nbinom_fit
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy
@@ -14,7 +14,7 @@ sns.set()
 def negative_binomial_analysis(args):
 
     logger.info('==================================')
-    logger.info('NEGATIVE BINOMIAL')
+    logger.info('NEGATIVE BINOMIAL FIT')
 
     interarrival_filename = os.path.join(
         args.confidential_dir, "interarrival_times.csv")
@@ -23,7 +23,7 @@ def negative_binomial_analysis(args):
     grouped_interarrival = df_interarrival.groupby('id')
 
     df_nbinom_params = pd.DataFrame(columns=['id', 'size', 'prob', 'interarrival_mean',
-                                             'interarrival_var', 'interarrival_count'],
+                                             'interarrival_var', 'interarrival_count', 'loglikelihood'],
                                     index=np.arange(len(grouped_interarrival)))
 
     for i, (subject, df_subject) in enumerate(grouped_interarrival):
@@ -35,15 +35,16 @@ def negative_binomial_analysis(args):
         df_nbinom_params['interarrival_count'].values[i] = len(data)
 
         try:
-            nbinom_params = fit_nbinom.fit_nbinom(data)
+            nbinom_params = nbinom_fit.nbinom_fit(data)
+            (n, p) = (nbinom_params['size'], nbinom_params['prob'])
+            loglikelihood = nbinom_fit.log_likelihood((n, p), data)
         except Exception:
             logger.info('Could not fit negative binomial on %s' % subject)
+            (n, p, loglikelihood) = (np.nan, np.nan, np.nan)
 
-        (n, p) = (nbinom_params['size'], nbinom_params['prob'])
-
-        df_nbinom_params['id'].values[i] = subject
         df_nbinom_params['size'].values[i] = n
         df_nbinom_params['prob'].values[i] = p
+        df_nbinom_params['loglikelihood'].values[i] = loglikelihood
 
         if args.draw_plots:
             plt.figure(figsize=(8, 6))
@@ -52,9 +53,11 @@ def negative_binomial_analysis(args):
             plt.xlim(0, np.max(data) + 20)
 
             time_span_days = np.sum(data)
-            plt.title('Subject %s; N=%d episodes over %d days (%d days/eps)' % (
+            plt.title('Subject %s; N=%d episodes over %d days ($\mu$=%d, $\sigma$=%.1f, $\sigma^2$=%d)' % (
                 subject[-4:], len(df_subject) + 1,
-                time_span_days, 1.0 * time_span_days / len(df_subject)))
+                time_span_days, np.mean(interarrival_times),
+                np.std(interarrival_times),
+                np.var(interarrival_times)))
             plt.xlabel('Episode interarrival time in days')
 
             domain = np.arange(1, np.max(data) + 20)
@@ -66,7 +69,6 @@ def negative_binomial_analysis(args):
             plt.legend()
             plt.show()
 
-    print "sfefessfe"
     df_nbinom_params.to_csv(os.path.join(
         args.working_dir, 'params_nbinom.csv'), index=False)
 
