@@ -27,7 +27,7 @@ def tweedie_analysis(args):
                                      index=np.arange(len(grouped_interarrival)))
 
     for i, (subject, df_subject) in enumerate(grouped_interarrival):
-        print i
+        logger.info("Subject %d of %d" % (i+1, len(grouped_interarrival)))
         data = df_subject['interarrival_days'].values
 
         df_tweedie_params['id'].values[i] = subject
