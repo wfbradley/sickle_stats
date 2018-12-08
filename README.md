@@ -25,16 +25,18 @@ after the treatment is significantly lower than the rate before the treatment.
 
 ## Installation
 
+We assume you have already installed Python3 and PIP3.
+
 To download this repo and the required libraries:
 ```
 git clone https://github.com/wfbradley/sickle_stats.git
 cd sickle_stats
-pip install -r requirements.txt --user --upgrade
+pip3 install -r requirements.txt --user --upgrade
 ```
 
 If the `pip install` fails for permission reasons, one can instead try
 ```
-sudo -H pip install -r requirements.txt --upgrade
+sudo -H pip3 install -r requirements.txt --upgrade
 ```
 
 ## Data

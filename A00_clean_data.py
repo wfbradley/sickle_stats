@@ -35,7 +35,7 @@ def clean_data(args):
     # Distinguish data from earlier, less-effective therapy.  Will be false if
     # therapy occured too long ago, or if no therapy was applied.
     df['patient_treated'] = False
-    for i in xrange(len(df)):
+    for i in range(len(df)):
         df['patient_treated'].values[i] = (
             (int(df['Unique Subject Identifier'].values[i][-4:]) >= 1315) and
             (pd.notnull(df['Infusion Date'].values[i])))
@@ -50,7 +50,7 @@ def clean_data(args):
     df['end_epoch'] = 0.0
     df['episode_duration_days'] = 0.0
 
-    for i in xrange(len(df)):
+    for i in range(len(df)):
         start_date = df['Onset date'].values[i]
         end_date = df['Resolution date'].values[i]
 
@@ -72,7 +72,7 @@ def clean_data(args):
     df['episode_duration_days_coalesced'] = df['episode_duration_days']
 
     time_list = ['start', 'end']
-    for i in xrange(2):
+    for i in range(2):
         s = time_list[i]
         t = time_list[1 - i]
         df['%s_epoch_coalesced' % s] = df['%s_epoch' % s]
