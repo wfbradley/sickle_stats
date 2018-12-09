@@ -17,9 +17,11 @@ def preliminary_stats(args):
     filename = os.path.join(
         args.confidential_dir, args.clean_file)
     logger.info("Summarizing data from %s" % filename)
-    # Unique Subject Identifier,Informed consent date,Infusion Date,
-    # Type of VOE,Onset date,Resolution date,No. of VOEs,
-    # patient_treated,start_epoch,end_epoch,episode_duration_days
+
+    # Unique Subject Identifier,Informed consent date,Infusion Date,Type of VOE,
+    # Onset date,Resolution date,No. of VOEs,patient_treated,start_epoch,end_epoch,
+    # episode_duration_days,start_epoch_coalesced,end_epoch_coalesced,
+    # episode_duration_days_coalesced
     df = pd.read_csv(filename)
 
     interarrival_filename = os.path.join(
@@ -46,17 +48,46 @@ def preliminary_stats(args):
     grouped_interarrival = df_interarrival.groupby('id')
     for subject, df_subject in grouped_interarrival:
         if args.draw_plots:
-            plt.figure(figsize=(8, 6))
-            interarrival_times = df_subject['interarrival_days'].values
-            sns.distplot(interarrival_times, rug=True)
+            if True:
+                # Interarrival time between episodes
+                plt.figure(figsize=(8, 6))
+                interarrival_times = df_subject['interarrival_days'].values
+                sns.distplot(interarrival_times, rug=True)
 
-            time_span_days = subject_to_timespan[subject]
-            plt.title('Subject %s; N=%d episodes over %d days ($\mu$=%d, $\sigma$=%.1f, $\sigma^2$=%d)' % (
-                subject[-4:], len(df_subject) + 1,
-                time_span_days, np.mean(interarrival_times),
-                np.std(interarrival_times),
-                np.var(interarrival_times)))
-            plt.xlabel('Episode interarrival time in days')
+                time_span_days = subject_to_timespan[subject]
+                plt.title('Subject %s; N=%d episodes over %d days ($\mu$=%d, $\sigma$=%.1f, $\sigma^2$=%d)' % (
+                    subject[-4:], len(df_subject) + 1,
+                    time_span_days, np.mean(interarrival_times),
+                    np.std(interarrival_times),
+                    np.var(interarrival_times)))
+                plt.xlabel('Episode interarrival time in days')
+
+            if True:
+                # Duration of episodes
+                plt.figure(figsize=(8, 6))
+                df_m = df.iloc[grouped.groups[subject]]
+                episode_duration = []
+                # Can have a VOC and an ACS on the same day, but it's really the
+                # same episode
+                for date, df_date in df_m.groupby('start_epoch_coalesced'):
+                    episode_duration.append(df_date['episode_duration_days_coalesced'].values[0])
+                    if len(df_date)>1:
+                        # If VOC and ACS together, duration should be equal.
+                        assert np.var(df_date['episode_duration_days_coalesced'].values) == 0.0
+                episode_duration = np.array(episode_duration)
+
+                dither_width = 0.5
+                episode_dither = dither_width * 2.0 * (np.random.rand(len(episode_duration)) - 0.5)
+                sns.distplot(episode_duration + episode_dither, rug=True)
+
+                time_span_days = subject_to_timespan[subject]
+                plt.title('Subject %s; Episode duration; N=%d episodes over %d days ($\mu$=%d, $\sigma$=%.1f, $\sigma^2$=%d)' % (
+                    subject[-4:], len(episode_duration),
+                    time_span_days, np.mean(episode_duration),
+                    np.std(episode_duration),
+                    np.var(episode_duration)))
+                plt.xlabel('Episode duration in days')
+
 
             plt.show()
 

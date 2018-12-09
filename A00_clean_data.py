@@ -89,17 +89,27 @@ def clean_data(args):
 
     # Extract interarrival times
     grouped = df.groupby('Unique Subject Identifier')
-    df_interarrival = pd.DataFrame(columns=['id', 'interarrival_days'])
+    df_interarrival = pd.DataFrame(
+        columns=['id', 'interarrival_days', 'episode_duration_days'])
     for subject, df_subject in grouped:
+        df_subject = df_subject.sort_values(by=['start_epoch_coalesced'])
         onsets = df_subject['start_epoch_coalesced'].values / 86400
-        onsets = onsets[np.isfinite(onsets)]
-        interarrival_times = np.diff(np.sort(onsets))
+        durations = 1.0 + (df_subject['end_epoch_coalesced'].values -
+                           df_subject['start_epoch_coalesced'].values) / 86400
+        assert np.all(np.isfinite(onsets))
+        # onsets = onsets[np.isfinite(onsets)]
+        interarrival_times = np.diff(onsets)
         # Note: it's possible to have a VOC and ACS at the same time;
         # we should coalesce these into a single episode, per below.
-        interarrival_times = interarrival_times[interarrival_times > 0]
-        for t in interarrival_times:
+        distinct_indices = interarrival_times > 0
+        interarrival_times = interarrival_times[distinct_indices]
+        durations = durations[:-1][distinct_indices]
+        # There's a little weirdness because of daylight savings time; round to nearest day
+        interarrival_times = np.round(interarrival_times).astype(int)
+        durations = np.round(durations).astype(int)
+        for t, d in zip(interarrival_times, durations):
             df_interarrival = df_interarrival.append(
-                {'id': subject, 'interarrival_days': t}, ignore_index=True)
+                {'id': subject, 'interarrival_days': t, 'episode_duration_days': d}, ignore_index=True)
 
     interarrival_filename = os.path.join(
         args.confidential_dir, "interarrival_times.csv")
