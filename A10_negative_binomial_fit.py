@@ -22,7 +22,7 @@ def negative_binomial_analysis(args):
     df_interarrival = pd.read_csv(interarrival_filename)
     grouped_interarrival = df_interarrival.groupby('id')
 
-    df_nbinom_params = pd.DataFrame(columns=['id', 'size', 'prob', 'interarrival_mean',
+    df_nbinom_params = pd.DataFrame(columns=['id', 'r', 'prob', 'interarrival_mean',
                                              'interarrival_var', 'interarrival_count', 'loglikelihood'],
                                     index=np.arange(len(grouped_interarrival)))
 
@@ -36,13 +36,14 @@ def negative_binomial_analysis(args):
 
         try:
             nbinom_params = nbinom_fit.nbinom_fit(data)
-            (n, p) = (nbinom_params['size'], nbinom_params['prob'])
-            loglikelihood = nbinom_fit.log_likelihood((n, p), data)
+            # I believe the "size" argument is actually the parameter "r".
+            (r, p) = (nbinom_params['size'], nbinom_params['prob'])
+            loglikelihood = nbinom_fit.log_likelihood((r, p), data)
         except Exception:
             logger.info('Could not fit negative binomial on %s' % subject)
             (n, p, loglikelihood) = (np.nan, np.nan, np.nan)
 
-        df_nbinom_params['size'].values[i] = n
+        df_nbinom_params['r'].values[i] = r
         df_nbinom_params['prob'].values[i] = p
         df_nbinom_params['loglikelihood'].values[i] = loglikelihood
 

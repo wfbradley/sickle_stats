@@ -108,7 +108,28 @@ def preliminary_correlations(args):
                         logger.info(
                             'Episode duration plot failure on Subject %s' % subject)
 
-            plt.show()
+            if True:
+                # Duration versus interarrival time
+                if len(df_subject) >= 10:
+                    try:
+                        jj = sns.jointplot('interarrival_days', 'episode_duration_days', data=df_subject,
+                                           kind="reg", stat_func=r2)
+                        time_span_days = subject_to_timespan[subject]
+                        jj.ax_marg_x.set_title(
+                            'Subject %s; Interarrival time vs duration; N=%d' % (
+                                subject[-4:], len(df_subject)))
+                        # jj.ax_joint.set_xlabel('Earlier duration')
+                        # jj.ax_joint.set_ylabel('Later duration')
+                        plt.tight_layout()
+                        r2_value = r2(df_subject['interarrival_days'].values,
+                                      df_subject['episode_duration_days'].values)
+                        logger.info("Subj %s: R^2=%.2f, N=%d" %
+                                    (subject[-4:], r2_value, len(df_subject)))
+                    except Exception:
+                        logger.info(
+                            'Episode duration plot failure on Subject %s' % subject)
+
+            #plt.show()
 
 
 if __name__ == '__main__':
