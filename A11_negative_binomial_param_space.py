@@ -22,14 +22,14 @@ def negative_binomial_parameter_visualization(args):
     # presumably anyone who calls this function wants to see the plots...
 
     plt.figure(figsize=(8, 6))
-    sns.scatterplot(x='size', y='prob',
+    sns.scatterplot(x='r', y='prob',
                     size='interarrival_count', data=df_nbinom_params)
-    plt.title('Negative binomial parameter space (size v prob)')
+    plt.title('Negative binomial parameter space (r vs p)')
 
     plt.figure(figsize=(8, 6))
     sns.scatterplot(x='interarrival_mean', y='prob',
                     size='interarrival_count', data=df_nbinom_params)
-    plt.title('Negative binomial parameter space (mean v prob)')
+    plt.title('Negative binomial parameter space (mean vs prob)')
 
     plt.show()
 
