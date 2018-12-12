@@ -3,6 +3,7 @@ import os
 import utils_sickle_stats as utils
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy import stats
 
 logger = utils.logger
 sns.set()
@@ -21,10 +22,21 @@ def negative_binomial_parameter_visualization(args):
     # We could check args.draw_plots to see if that's active, but
     # presumably anyone who calls this function wants to see the plots...
 
+    def r2(x, y):
+        return stats.pearsonr(x, y)[0] ** 2
+
+    r2_value = r2(df_nbinom_params['r'].values, df_nbinom_params['prob'].values)
     plt.figure(figsize=(8, 6))
     sns.scatterplot(x='r', y='prob',
                     size='interarrival_count', data=df_nbinom_params)
-    plt.title('Negative binomial parameter space (r vs p)')
+    plt.title('Negative binomial parameter space (r vs p), $R^2$=%.2f' % r2_value)
+
+    plt.figure(figsize=(8, 6))
+    x = 1.0 / df_nbinom_params['r'].values
+    y = (1.0 - df_nbinom_params['prob'].values) / (df_nbinom_params['prob'].values)
+    r2_value = r2(x, y)
+    sns.scatterplot(x, y, size=df_nbinom_params['interarrival_count'])
+    plt.title('Negative binomial parameter space (r vs p), $R^2$=%.2f, foo' % r2_value)
 
     plt.figure(figsize=(8, 6))
     sns.scatterplot(x='interarrival_mean', y='prob',

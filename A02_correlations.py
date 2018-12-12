@@ -129,7 +129,7 @@ def preliminary_correlations(args):
                         logger.info(
                             'Episode duration plot failure on Subject %s' % subject)
 
-            #plt.show()
+            plt.show()
 
 
 if __name__ == '__main__':
