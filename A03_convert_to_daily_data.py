@@ -9,7 +9,7 @@ logger = utils.logger
 pd.set_option('max_colwidth', 100)
 
 
-def convert_to_daily(args):
+def main(args):
     logger.info('==================================')
     logger.info('CONVERSION TO DAILY SEQUENCE OF DATA FOR SPRT')
 
@@ -107,4 +107,4 @@ def convert_to_daily(args):
 if __name__ == '__main__':
     args = utils.parse_arguments()
     utils.initialize_logger(args)
-    convert_to_daily(args)
+    main(args)

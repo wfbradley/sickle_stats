@@ -17,7 +17,7 @@ def to_epoch(s):
     return(time.mktime(t))
 
 
-def clean_data(args):
+def main(args):
 
     logger.info('==================================')
     logger.info('DATA CLEANING')
@@ -82,6 +82,17 @@ def clean_data(args):
     invalid = pd.isnull(df['episode_duration_days_coalesced'])
     df['episode_duration_days_coalesced'].values[invalid] = 1
 
+    # Can have an ACS and VOC on the same day; we add a column so we can select
+    # a unique representative of each event if we want to.
+    grouped_date = df.groupby(['Unique Subject Identifier', 'start_epoch_coalesced'])
+    df['unique_event_witness'] = True
+    for (subj, start_epoch), df_date in grouped_date:
+        if len(df_date) == 1:
+            continue
+        indices = grouped_date.groups[subj, start_epoch]
+        for ind in indices[1:]:
+            df['unique_event_witness'].values[ind] = False
+
     clean_filename = os.path.join(
         args.confidential_dir, args.clean_file)
     logger.info("Writing file %s" % clean_filename)
@@ -120,4 +131,4 @@ def clean_data(args):
 if __name__ == '__main__':
     args = utils.parse_arguments()
     utils.initialize_logger(args)
-    clean_data(args)
+    main(args)

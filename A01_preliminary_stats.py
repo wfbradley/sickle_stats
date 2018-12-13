@@ -9,7 +9,7 @@ logger = utils.logger
 sns.set()
 
 
-def preliminary_stats(args):
+def main(args):
 
     logger.info('==================================')
     logger.info('PRELIMINARY STATS')
@@ -95,4 +95,4 @@ def preliminary_stats(args):
 if __name__ == '__main__':
     args = utils.parse_arguments()
     utils.initialize_logger(args)
-    preliminary_stats(args)
+    main(args)

@@ -9,7 +9,7 @@ logger = utils.logger
 sns.set()
 
 
-def uniform_analysis(args):
+def main(args):
 
     logger.info('==================================')
     logger.info('UNIFORM FIT for EPISODE DURATION')
@@ -58,4 +58,4 @@ def uniform_analysis(args):
 if __name__ == '__main__':
     args = utils.parse_arguments()
     utils.initialize_logger(args)
-    uniform_analysis(args)
+    main(args)

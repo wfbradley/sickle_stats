@@ -15,7 +15,7 @@ logger = utils.logger
 sns.set()
 
 
-def preliminary_correlations(args):
+def main(args):
 
     logger.info('==================================')
     logger.info('PRELIMINARY CORRELATIONS')
@@ -135,4 +135,4 @@ def preliminary_correlations(args):
 if __name__ == '__main__':
     args = utils.parse_arguments()
     utils.initialize_logger(args)
-    preliminary_correlations(args)
+    main(args)

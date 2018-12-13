@@ -11,7 +11,7 @@ logger = utils.logger
 sns.set()
 
 
-def tweedie_analysis(args):
+def main(args):
 
     logger.info('==================================')
     logger.info('TWEEDIE FIT')
@@ -81,4 +81,4 @@ def tweedie_analysis(args):
 if __name__ == '__main__':
     args = utils.parse_arguments()
     utils.initialize_logger(args)
-    tweedie_analysis(args)
+    main(args)
