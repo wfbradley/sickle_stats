@@ -3,9 +3,7 @@ import pandas as pd
 import os
 import utils_sickle_stats as utils
 import nbinom_fit
-import matplotlib.pyplot as plt
 import seaborn as sns
-import scipy
 
 logger = utils.logger
 sns.set()
