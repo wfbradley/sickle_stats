@@ -41,7 +41,7 @@ def main(args):
             loglikelihood = nbinom_fit.log_likelihood((r, p), data)
         except Exception:
             logger.info('Could not fit negative binomial on %s' % subject)
-            (n, p, loglikelihood) = (np.nan, np.nan, np.nan)
+            (r, p, loglikelihood) = (np.nan, np.nan, np.nan)
 
         df_nbinom_params['r'].values[i] = r
         df_nbinom_params['prob'].values[i] = p
@@ -71,7 +71,7 @@ def main(args):
             plt.show()
 
     df_nbinom_params.to_csv(os.path.join(
-        args.working_dir, 'params_interarrival_nbinom.csv'), index=False)
+        args.working_dir, 'params_nbinom_interarrival.csv'), index=False)
 
 
 if __name__ == '__main__':

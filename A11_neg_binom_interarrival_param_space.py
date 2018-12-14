@@ -14,7 +14,7 @@ def main(args):
     logger.info('==================================')
     logger.info('INTERARRIVAL NEGATIVE BINOMIAL PARAMETER SPACE VISUALIZATION')
 
-    nbinom_filename = os.path.join(args.working_dir, 'params_nbinom.csv')
+    nbinom_filename = os.path.join(args.working_dir, 'params_nbinom_interarrival.csv')
 
     # id,size,prob,interarrival_mean,interarrival_var,interarrival_count
     df_nbinom_params = pd.read_csv(nbinom_filename)
