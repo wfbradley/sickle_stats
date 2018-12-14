@@ -41,8 +41,16 @@ def filter_cleaned_data(df, uniquify_events=False):
 #       all hospital days at time on onset (so count
 #       is unbounded)
 def event_partition_generator(args, df=None, num_days=7,
-                              count_type='hospital_onset'):
+                              count_type='hospital_onset',
+                              date_field='episode_duration_days_coalesced',
+                              date_units='seconds'
+                              ):
     assert count_type in ['onset', 'hospital', 'hospital_onset']
+    assert date_units in ['seconds', 'days']
+    if date_units == 'seconds':
+        units_per_day = 86400
+    elif date_units == 'days':
+        units_per_day = 1
 
     if df is None:
         filename = os.path.join(
@@ -51,14 +59,14 @@ def event_partition_generator(args, df=None, num_days=7,
         df = filter_cleaned_data(df, uniquify_events=True)
 
     grouped = df.groupby('Unique Subject Identifier')
-    window_seconds = 86400 * num_days
+    window_units = units_per_day * num_days
     for subj, df_subj in grouped:
         df_subj = df_subj.sort_values(by=['start_epoch_coalesced'])
         earliest_epoch = np.min(df_subj.start_epoch_coalesced.values)
         # "consent_epoch" should be constant, so we arbitrarily take the first one
         latest_epoch = df_subj['consent_epoch'].values[0]
         num_windows = int(np.floor(
-            (latest_epoch - earliest_epoch) / window_seconds))
+            (latest_epoch - earliest_epoch) / window_units))
         if num_windows == 0:
             logger.info("No windows for Subject %s" % (subj[-4:]))
             continue
@@ -66,10 +74,10 @@ def event_partition_generator(args, df=None, num_days=7,
 
         for i in range(len(df_subj)):
             duration_days = int(df_subj[
-                'episode_duration_days_coalesced'].values[i])
+                date_field].values[i])
             for j in range(duration_days):
-                w = int((df_subj['start_epoch_coalesced'].values[i] - 
-                        earliest_epoch + j * 86400) / window_seconds)
+                w = int((df_subj['start_epoch_coalesced'].values[i] -
+                         earliest_epoch + j * units_per_day) / window_units)
                 if count_type == 'onset':
                     counts[w] += 1
                     break
