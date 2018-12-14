@@ -71,7 +71,7 @@ def main(args):
             plt.show()
 
     df_nbinom_params.to_csv(os.path.join(
-        args.working_dir, 'params_interarrival_nbinom.csv'), index=False)
+        args.working_dir, 'params_nbinom_interarrival.csv'), index=False)
 
 
 if __name__ == '__main__':

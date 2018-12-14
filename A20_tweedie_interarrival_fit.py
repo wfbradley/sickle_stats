@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import os
 import utils_sickle_stats as utils
+import matplotlib.pyplot as plt
 import tweedie_dist
 import tweedie_fit
-import matplotlib.pyplot as plt
 import seaborn as sns
 
 logger = utils.logger
@@ -14,7 +14,7 @@ sns.set()
 def main(args):
 
     logger.info('==================================')
-    logger.info('TWEEDIE FIT')
+    logger.info('TWEEDIE INTERARRIVAL FIT')
 
     interarrival_filename = os.path.join(
         args.confidential_dir, "interarrival_times.csv")
@@ -75,7 +75,7 @@ def main(args):
             plt.show()
 
     df_tweedie_params.to_csv(os.path.join(
-        args.working_dir, 'params_tweedie.csv'), index=False)
+        args.working_dir, 'params_tweedie_interarrival.csv'), index=False)
 
 
 if __name__ == '__main__':

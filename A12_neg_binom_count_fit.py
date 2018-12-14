@@ -42,7 +42,7 @@ def main(args):
         df_nbinom_params['loglikelihood'].values[i] = loglikelihood
 
     df_nbinom_params.to_csv(os.path.join(
-        args.working_dir, 'params_count_nbinom.csv'), index=False)
+        args.working_dir, 'params_nbinom_count.csv'), index=False)
 
 
 if __name__ == '__main__':
