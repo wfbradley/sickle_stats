@@ -81,7 +81,9 @@ def parse_arguments():
     parser.add_argument('--input_file', type=str, default='l_voc_acs_mh.xlsx',
                         help='Input Excel data file within confidential_data_dir')
     parser.add_argument('--clean_file', type=str, default='cleaned_data.csv',
-                        help='Input Excel data file within confidential_data_dir')
+                        help='Cleaned data file (csv) within confidential_data_dir')
+    parser.add_argument('--daily_file', type=str, default='daily_file.csv',
+                        help='Cleaned data file converted to daily format (csv) within confidential_data_dir')
     parser.add_argument('--draw_plots', action='store_true', default=False,
                         help='Render plots to screen')
 
