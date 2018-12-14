@@ -14,7 +14,7 @@ sns.set()
 def main(args):
 
     logger.info('==================================')
-    logger.info('NEGATIVE BINOMIAL FIT')
+    logger.info('INTERARRIVAL NEGATIVE BINOMIAL FIT')
 
     interarrival_filename = os.path.join(
         args.confidential_dir, "interarrival_times.csv")
@@ -71,7 +71,7 @@ def main(args):
             plt.show()
 
     df_nbinom_params.to_csv(os.path.join(
-        args.working_dir, 'params_nbinom.csv'), index=False)
+        args.working_dir, 'params_interarrival_nbinom.csv'), index=False)
 
 
 if __name__ == '__main__':

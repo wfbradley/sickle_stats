@@ -12,7 +12,7 @@ sns.set()
 def main(args):
 
     logger.info('==================================')
-    logger.info('NEGATIVE BINOMIAL PARAMETER SPACE VISUALIZATION')
+    logger.info('INTERARRIVAL NEGATIVE BINOMIAL PARAMETER SPACE VISUALIZATION')
 
     nbinom_filename = os.path.join(args.working_dir, 'params_nbinom.csv')
 
