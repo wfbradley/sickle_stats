@@ -22,10 +22,13 @@ def main(args):
     #   'episode_duration_days_coalesced']
     clean_df = pd.read_csv(cleaned_filename)
 
-    # To get going quickly, let's take three shortcuts, to possibly clean up later:
+    # The same event may be categorized as ACS and VOC, leading to duplicate
+    # rows; uniquify VOEs
+    clean_df = utils.filter_cleaned_data(clean_df)
+
+    # To get going quickly, let's take two shortcuts, to possibly clean up later:
     # 1.) Drop rows with partial dates
-    # 2.) Drop 'ACS' events to avoid duplicated events in the data
-    # 3.) Drop untreated patients - not sure if this is a good idea, but I
+    # 2.) Drop untreated patients - not sure if this is a good idea, but I
     # think those patients' data are probably right-censored
     valid_df = clean_df[(clean_df.start_epoch.notnull()) & (clean_df.end_epoch.notnull()) & (
         clean_df["Type of VOE"] == 'VOC') & (clean_df.patient_treated)]

@@ -4,8 +4,9 @@ import logging
 import argparse
 from version_sickle_stats import __version__
 
+
 # Create directory only if needed.  (Makes nested directories if needed,
-#   e.g. "new1/new2/new3/".)
+# e.g. "new1/new2/new3/".)
 def safe_mkdir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
@@ -13,6 +14,13 @@ def safe_mkdir(directory):
 
 logger = logging.getLogger('Sickle Cell Stats logger')
 logger_initialized = False
+
+
+def filter_cleaned_data(df, uniquify_events=False):
+    if uniquify_events:
+        df = df.iloc[df['unique_event_witness'].values]
+
+    return(df)
 
 
 def check_permissions(args):

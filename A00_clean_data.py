@@ -6,16 +6,17 @@
 import numpy as np
 import pandas as pd
 import os
-import time
+import datetime
 import utils_sickle_stats as utils
 logger = utils.logger
 
 
 # Convert string "2014-11-02" to epoch time
 def to_epoch(s):
-    t = time.strptime(s, "%Y-%m-%d")
-    return(time.mktime(t))
-
+    t = datetime.datetime.strptime(s, "%Y-%m-%d")
+    epoch = datetime.datetime.utcfromtimestamp(0)
+    delta = t - epoch
+    return delta.total_seconds()
 
 def main(args):
 
@@ -114,9 +115,8 @@ def main(args):
         # we should coalesce these into a single episode, per below.
         distinct_indices = interarrival_times > 0
         interarrival_times = interarrival_times[distinct_indices]
+        interarrival_times = interarrival_times.astype(int)
         durations = durations[:-1][distinct_indices]
-        # There's a little weirdness because of daylight savings time; round to nearest day
-        interarrival_times = np.round(interarrival_times).astype(int)
         durations = np.round(durations).astype(int)
         for t, d in zip(interarrival_times, durations):
             df_interarrival = df_interarrival.append(
