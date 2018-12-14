@@ -50,6 +50,7 @@ def main(args):
     df['start_epoch'] = 0.0
     df['end_epoch'] = 0.0
     df['episode_duration_days'] = 0.0
+    df['consent_epoch'] = 0.0
 
     for i in range(len(df)):
         start_date = df['Onset date'].values[i]
@@ -64,6 +65,8 @@ def main(args):
                 df[col].values[i] = np.NaN
         df['episode_duration_days'].values[i] = 1 + (
             df['end_epoch'].values[i] - df['start_epoch'].values[i]) / 86400
+
+        df['consent_epoch'].values[i] = to_epoch(df['Informed consent date'].values[i])
 
     # Handle missing dates by coalescing from other date (e.g., if
     # start date of episode is present but end date is missing, insert end date
