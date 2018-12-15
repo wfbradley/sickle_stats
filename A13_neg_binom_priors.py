@@ -1,8 +1,12 @@
 import pandas as pd
 import os
+import sys
 import utils_sickle_stats as utils
-import cPickle as pickle
 import scipy.stats as stats
+if sys.version_info.major == 2:
+    import cPickle as pickle
+else:
+    import pickle
 
 logger = utils.logger
 
@@ -30,7 +34,7 @@ def main(args):
     models['vanilla'] = (beta_alpha, beta_beta, gamma_alpha, gamma_scale)
 
     filename = os.path.join(args.working_dir, 'priors_nbinom.pkl')
-    pickle.dump(models, open(filename, 'w'))
+    pickle.dump(models, open(filename, 'wb'))
 
 
 if __name__ == '__main__':
