@@ -23,11 +23,11 @@ def main(args):
 
     (beta_alpha, beta_beta, _, _) = stats.beta.fit(
         df_neg_binom.prob.values, floc=0, fscale=1)
-    (gamma_alpha, gamma_loc, gamma_beta) = stats.gamma.fit(
-        df_neg_binom.r.values, floc=0, fscale=1)
+    (gamma_alpha, gamma_loc, gamma_scale) = stats.gamma.fit(
+        df_neg_binom.r.values, floc=0)
 
     # independently as Gaussians
-    models['vanilla'] = (beta_alpha, beta_beta, gamma_alpha, gamma_beta)
+    models['vanilla'] = (beta_alpha, beta_beta, gamma_alpha, gamma_scale)
 
     filename = os.path.join(args.working_dir, 'priors_nbinom.pkl')
     pickle.dump(models, open(filename, 'w'))
