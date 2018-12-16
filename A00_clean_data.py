@@ -13,10 +13,13 @@ logger = utils.logger
 
 # Convert string "2014-11-02" to epoch time
 def to_epoch(s):
-    t = datetime.datetime.strptime(s, "%Y-%m-%d")
-    epoch = datetime.datetime.utcfromtimestamp(0)
-    delta = t - epoch
-    return delta.total_seconds()
+    try:
+        t = datetime.datetime.strptime(s, "%Y-%m-%d")
+        epoch = datetime.datetime.utcfromtimestamp(0)
+        delta = t - epoch
+        return delta.total_seconds()
+    except:
+        return(np.nan)
 
 def main(args):
 
@@ -51,6 +54,7 @@ def main(args):
     df['end_epoch'] = 0.0
     df['episode_duration_days'] = 0.0
     df['consent_epoch'] = 0.0
+    df['infusion_epoch'] = 0.0
 
     for i in range(len(df)):
         start_date = df['Onset date'].values[i]
@@ -62,11 +66,12 @@ def main(args):
             if len(d.split('-')) == 3:
                 df[col].values[i] = to_epoch(d)
             else:
-                df[col].values[i] = np.NaN
+                df[col].values[i] = np.nan
         df['episode_duration_days'].values[i] = 1 + (
             df['end_epoch'].values[i] - df['start_epoch'].values[i]) / 86400
 
         df['consent_epoch'].values[i] = to_epoch(df['Informed consent date'].values[i])
+        df['infusion_epoch'].values[i] = to_epoch(df['Infusion Date'].values[i])
 
     # Handle missing dates by coalescing from other date (e.g., if
     # start date of episode is present but end date is missing, insert end date
