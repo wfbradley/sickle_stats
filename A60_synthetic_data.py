@@ -33,7 +33,7 @@ def main(args):
 
     # How much data do we generate per subject?
     days_before_transfusion = 2 * 365
-    days_after_transfusion = 6 * 365
+    days_after_transfusion = 4 * 365
 
     window_days = 7
     # Sparse data frame (just track when events happen)
@@ -43,8 +43,8 @@ def main(args):
     rows_before = int(days_before_transfusion / window_days)
     rows_after = int(days_after_transfusion / window_days)
     df_syn_dense = pd.DataFrame(columns=['subject', 'week', 'pretransfusion', 'events', 'days_in_hospital',
-                                         'cumu_events', 'cumu_days_in_hospital', 'true_p', 'true_r'],
-                                index=range(N * (rows_before + rows_after)))
+                                         'cumu_events', 'cumu_days_in_hospital', 'true_p', 'true_r', 'true_mean_count'],
+                                index=range(N * (rows_before + rows_after + rows_after)))
 
     (beta_alpha, beta_beta, gamma_alpha, gamma_scale) = prior_models['vanilla']
 
@@ -57,13 +57,20 @@ def main(args):
         # Use "randomly distributed colonies" interpretation to generate hospital days
         # per Kozubowski and Podgorski, 2009
         for pretransfusion, row_size, p, r in [(True, rows_before, p_before, r_before),
-                                               (False, rows_after, p_before, 0.25 * r_before)]:
+                                               (False, rows_after,
+                                                p_before, 0.20 * r_before),
+                                               (False, rows_after, p_before, 0.30 * r_before)]:
 
-            lambda_param = - r * np.log(p)
+            # I think formula from Kozubowski /Podgorski is slightly wrong,
+            # with p swapped for (1-p) (based on mean)
+            p2 = 1.0 - p
+
+            lambda_param = - r * np.log(p2)
             max_duration = 2048
             duration_prob = np.zeros(max_duration)
             for k in range(1, max_duration):
-                duration_prob[k] = -np.power((1.0 - p), k) / (np.log(p) * k)
+                # duration_prob[k] = -np.power((1.0 - p), k) / (np.log(p) * k)
+                duration_prob[k] = -np.power(p2, k) / (np.log(p2) * k)
             duration_cumu_prob = np.cumsum(duration_prob)
             # assert (duration_cumu_prob[-1]) > .99
             duration_cumu_prob[-1] = 1.0
@@ -86,11 +93,12 @@ def main(args):
                 excess = VOE_days_in_hospital_counts[:-1][bad_rows] - 7
                 VOE_days_in_hospital_counts[:-1][bad_rows] = 7
                 VOE_days_in_hospital_counts[1:][bad_rows] += excess
-                # logger.info('Excess: %s %s %d' %
+                #logger.info('Excess: %s %s %d' %
                 #            (subj, pretransfusion, np.sum(bad_rows)))
             if VOE_days_in_hospital_counts[-1] > 7:
-                logger.info('Terminal excess: %s %s %d' % (
-                    subj, pretransfusion, VOE_days_in_hospital_counts[-1]))
+                logger.info('Terminal excess: %s %s %d (mean = %.2f)' % (
+                    subj, pretransfusion, VOE_days_in_hospital_counts[-1],
+                    p * r / (1.0 - p)))
                 VOE_days_in_hospital_counts[-1] = 7
 
             df_syn_dense['subject'].values[
@@ -111,11 +119,13 @@ def main(args):
                 dense_row_index:dense_row_index + row_size] = p
             df_syn_dense['true_r'].values[
                 dense_row_index:dense_row_index + row_size] = r
+            df_syn_dense['true_mean_count'].values[
+                dense_row_index:dense_row_index + row_size] = p * r / (1.0 - p)
 
             dense_row_index += row_size
 
     # df_syn_sparse.to_csv(outfilename_sparse, index=False)
-    df_syn_dense.to_csv(outfilename_dense, index=False)
+    df_syn_dense.to_csv(outfilename_dense, index=False, compression='gzip')
 
 
 if __name__ == '__main__':
