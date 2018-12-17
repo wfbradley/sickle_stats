@@ -15,10 +15,6 @@ def main(args):
     logger.info('==================================')
     logger.info('PLOT FIGURES')
 
-    if not args.draw_plots:
-        logger.info("Skipping plotting")
-        return
-
     pix_dir = os.path.join(args.working_dir, 'figures')
     utils.safe_mkdir(pix_dir)
 

@@ -51,6 +51,19 @@ Data is cleaned and put into a standard form by running
 python 00_clean_data.py
 ```
 
+## Running Everything
+All the principal scripts can be run, in order, with a single command:
+```
+python Master_sickle.py
+```
+Runtime should be under a minute.  By default, output goes to `data`;
+figures go to `data/figures`; and no figures are plotted to screen.  To display
+the figures, run
+```
+python Master_sickle.py --draw_plots
+```
+
+
 ## Models
 
 The rate of episodes differs between patients, so many models have a
@@ -63,7 +76,8 @@ sample the time of the episodes for that patient.
 Episode process for patient i modeled as Poisson process of rate
 ![lambda_i](http://mathurl.com/yd2xhu3q.png).  Distribution of
 ![lambda_i](http://mathurl.com/yd2xhu3q.png) is, say, a Gamma(r,alpha)
-distribution.
+distribution.  This is also called a compound poisson-gamma distribution, 
+and is a type of Tweedie distribution.
 
 ### Hierarchical Negative Binomial Process
 
@@ -73,10 +87,6 @@ parameters ![NB(r_i,p_i)](http://mathurl.com/yca7w4ce.png).  The r_i can be
 sampled from another negative binomial, and p_i can be sampled from a beta
 distribution. (These should probably be correlated.)
 
-## Generative Models
-
-Once we have fit a probabilistic model, we can generate samples from it to
-produce a set of synthetic data for further analysis...
 
 ## Authors
 
