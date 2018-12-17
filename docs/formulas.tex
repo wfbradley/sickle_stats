@@ -1,0 +1,81 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{bbm}
+\usepackage{epsfig}
+\usepackage{latexsym}
+\usepackage{color}
+
+
+% \RR is supposed to represent the reals.
+\newcommand{\RR}{\mathbbm{R}}
+% \FF is supposed to represent a field.
+\newcommand{\FF}{\mathbbm{F}}
+% \CC is supposed to represent the complex plane.
+\newcommand{\CC}{\mathbbm{C}}
+% \ZZ is supposed to represent the integers
+\newcommand{\ZZ}{\mathbbm{Z}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{conjecture}{Conjecture}
+
+\newcommand{\proof}{\textsc{Proof: }}
+% ``eop'' is ``End of Proof''.
+\newcommand{\eop}{ $\Box$}
+
+\begin{document}
+\title{Tale 2 Cities}
+\author{Dickens}
+\maketitle
+\bibliographystyle{plain}
+
+\begin{abstract}
+Best of times, worst of times.
+\end{abstract}
+
+% How to add a table of contents:
+%\tableofcontents
+
+% How to include an eps file (called ``cell.eps'' in this case).
+%\begin{center}
+%\epsfig{file=cell.eps,height=3.0in}
+%\end{center}
+
+% How to make a figure (with caption, number, etc)
+%\begin{figure}[htbp] %  figure placement: here, top, bottom, or page
+%   \centering
+%   \includegraphics[width=0.9\linewidth]{filename.eps}
+%   \caption{ Trenchant description goes here.}
+%  \label{fig:my_great_figure}
+%\end{figure}
+
+% How to add a bibliography:  Use ``\cite{reference_name}'' and the following
+%\bibliography{../../bibliography/master/master}
+
+% If you want the References (i.e. bibliography) to show up as its own
+% section in the table of contents, include the following at the top
+% of the document, with all the other "usepackage" commands:
+%\usepackage[nottoc,numbib]{tocbibind}
+
+
+\section{Introduction}
+
+Observed: 
+\begin{itemize}
+\item $N$, the number of subjects in the population
+\item Reduction ratio $R_i$ for each subjects (where $R=0.25$ means a 75\% reduction)
+\end{itemize}
+Latent:
+\begin{itemize}
+\item $Q_{25} = \Pr[R_{subject}\leq 0.25]$.
+\end{itemize}
+Then probability of success is:
+$$\sum_{k=0}^N \binom{N}{k} Q_{25}^k (1-Q_{25})^{N-k} \mathbbm{1}_{<0.05}(I_{x=0.5}(k, N-k+1))$$
+
+
+
+\end{document}
